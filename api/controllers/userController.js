@@ -48,13 +48,12 @@ const loginUser = ash(async (req, res) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
 
-    if (!user) {
-        console.log("user not found")
+    if (!user || !email || !password) {
         return res.status(404).json({ message: "Sorry, we couldn't find account with this email and password."})
     }
 
-    const passwordValidation = bcrypt.compare(password, user.password)
-
+    const passwordValidation = await bcrypt.compare(password, user.password)
+    console.log({passwordValidation});
     if (passwordValidation) {
         const token = generateJwt(user.id)
         return res.status(201).json({ user, token, message: "Login Successfull"})

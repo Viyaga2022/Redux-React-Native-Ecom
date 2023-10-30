@@ -17,15 +17,14 @@ const LoginContent = () => {
 
   const handleLogin = async () => {
     const loginData = { email, password }
-    await dispatch(login(loginData))
+    dispatch(login(loginData))
   }
 
   useEffect(() => {
-
     if (errorMessage) {
       Alert.alert('', errorMessage)
     } else if (currentUser) {
-      return () => navigation.navigate('Main')
+      navigation.navigate('Main')
     }
 
     dispatch(reset())

@@ -12,6 +12,8 @@ import DealOfTheDay from '../components/home/DealOfTheDay'
 import Products from '../components/home/Products'
 import AddressModal from '../screens/AddressModal'
 import { useDispatch, useSelector } from 'react-redux'
+import { logout } from '../Redux/slices/authSlice'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets()
@@ -19,10 +21,25 @@ const HomeScreen = () => {
   const dispatch = useDispatch()
   const { currentUser } = useSelector((state) => state.auth)
 
-  useEffect(() => {
-    if(!currentUser) {
+  const checkToken = async () => {
+    token = await AsyncStorage.getItem('auth')
+    console.log({ token });
+    if (!token) {
+      dispatch(logout())
       navigation.navigate('Login')
     }
+  }
+
+  console.log({ Home: currentUser });
+
+  useEffect(() => {
+    checkToken()
+
+    if (!currentUser) {
+      navigation.navigate('Login')
+    }
+
+    dispatch(logout())
   }, [currentUser, navigation])
 
   return (

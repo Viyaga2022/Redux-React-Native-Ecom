@@ -1,6 +1,7 @@
 import {API_URL} from '@env'
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import axios from "axios"
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BASE_URL = API_URL + '/user'
 
@@ -49,4 +50,14 @@ const myAccount = createAsyncThunk(
     }
 )
 
-export { register, login, myAccount }
+// Store Auth Token
+const storeAuthToken = async(token) => {
+    await AsyncStorage.setItem('auth', token)
+}
+
+// Delete Auth Token
+const deleteAuthToken = async() => {
+    await AsyncStorage.setItem('auth', '')
+}
+
+export { register, login, myAccount, storeAuthToken, deleteAuthToken }

@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { register, login } from '../services/authServices'
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { register, login, storeAuthToken, deleteAuthToken } from '../services/authServices'
 
 const initialState = {
     currentUser: null,
@@ -19,6 +18,7 @@ const authSlice = createSlice({
             state.errorMessage = null
         },
         logout: (state) => {
+            deleteAuthToken()
             state.currentUser = null
             state.isLoding = false
             state.successMessage = null
@@ -32,12 +32,10 @@ const authSlice = createSlice({
                 state.isLoding = true
             })
             .addCase(register.fulfilled, (state, action) => {
-                console.log("fullfilled");
                 state.isLoding = false
                 state.successMessage = action.payload.message
             })
             .addCase(register.rejected, (state, action) => {
-                console.log("rejected");
                 state.isLoding = false
                 state.errorMessage = action.payload
             })
@@ -46,12 +44,14 @@ const authSlice = createSlice({
             .addCase(login.pending, (state) => {
                 state.isLoding = true
             })
-            .addCase(login.fulfilled, async(state, action) => {
+            .addCase(login.fulfilled, (state, action) => {
+                console.log("Login fullfilled");
+                storeAuthToken(action.payload.token)
                 state.isLoding = false
                 state.currentUser = action.payload.user
-                console.log(action.payload.token);
             })
             .addCase(login.rejected, (state, action) => {
+                console.log("Login rejected");
                 state.isLoding = false
                 state.errorMessage = action.payload
             })
