@@ -1,4 +1,4 @@
-import { StyleSheet, ScrollView, View } from 'react-native'
+import { StyleSheet, ScrollView, View, Alert } from 'react-native'
 import React, { useEffect } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
@@ -12,35 +12,34 @@ import DealOfTheDay from '../components/home/DealOfTheDay'
 import Products from '../components/home/Products'
 import AddressModal from '../screens/AddressModal'
 import { useDispatch, useSelector } from 'react-redux'
-import { logout } from '../Redux/slices/authSlice'
+import { logout, getUserAccount } from '../Redux/slices/authSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const HomeScreen = () => {
   const insets = useSafeAreaInsets()
   const navigation = useNavigation()
   const dispatch = useDispatch()
-  const { currentUser } = useSelector((state) => state.auth)
-
-  const checkToken = async () => {
-    token = await AsyncStorage.getItem('auth')
-    console.log({ token });
-    if (!token) {
-      dispatch(logout())
-      navigation.navigate('Login')
-    }
+  const { currentUser, userErrorMsg } = useSelector((state) => state.auth)
+  if (currentUser) {
+    console.log(currentUser);
   }
 
-  console.log({ Home: currentUser });
+  const getUser = async () => {
+    const token = await AsyncStorage.getItem('auth')
+    if (!token) {
+      dispatch(logout())
+      navigation.replace('Login')
+    }
+    dispatch(getUserAccount())
+  }
 
   useEffect(() => {
-    checkToken()
-
-    if (!currentUser) {
-      navigation.navigate('Login')
+    if (userErrorMsg) {
+      Alert.alert('', userErrorMsg)
     }
 
-    dispatch(logout())
-  }, [currentUser, navigation])
+    getUser()
+  }, [userErrorMsg])
 
   return (
     <>

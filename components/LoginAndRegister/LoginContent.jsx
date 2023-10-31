@@ -13,7 +13,7 @@ const LoginContent = () => {
   const navigation = useNavigation()
   const dispatch = useDispatch()
 
-  const { isLoding, errorMessage, currentUser } = useSelector((state) => state.auth)
+  const { isLoding, loginErrorMsg, loginSuccessMsg } = useSelector((state) => state.auth)
 
   const handleLogin = async () => {
     const loginData = { email, password }
@@ -21,14 +21,17 @@ const LoginContent = () => {
   }
 
   useEffect(() => {
-    if (errorMessage) {
-      Alert.alert('', errorMessage)
-    } else if (currentUser) {
-      navigation.navigate('Main')
+    if (loginErrorMsg) {
+      Alert.alert('', loginErrorMsg)
+    }
+
+    if (loginSuccessMsg) {
+      Alert.alert('', loginSuccessMsg)
+      navigation.replace('Main')
     }
 
     dispatch(reset())
-  }, [errorMessage, currentUser, dispatch, navigation])
+  }, [loginErrorMsg, loginSuccessMsg])
 
   return (
     <KeyboardAvoidingView>

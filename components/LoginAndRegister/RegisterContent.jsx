@@ -15,32 +15,42 @@ const RegisterContent = () => {
     const navigation = useNavigation()
     const dispatch = useDispatch()
 
-    const { currentUser, isLoding, errorMessage, successMessage } = useSelector((state) => state.auth)
+    const { isLoding, registerErrorMsg, registerSuccessMsg } = useSelector((state) => state.auth)
 
     const handleRegister = async () => {
         const userData = { name, email: userEmail, password }
         dispatch(register(userData))
     }
-
+    //navigation.navigate('Login')
     useEffect(() => {
+        if (registerErrorMsg) {
+            Alert.alert('', registerErrorMsg)
+        }
 
-        if (errorMessage) {
-            Alert.alert('', errorMessage)
-        } else if (successMessage) {
+        if (registerSuccessMsg) {
+
+            Alert.alert(
+                'Registeration Successfull',
+                registerSuccessMsg,
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            dispatch(reset())
+                            navigation.navigate('Login')
+                        }
+                    }
+                ])
+
             setName("")
             setUserEmail("")
             setPassword("")
-
-            Alert.alert('Registeration Successfull', successMessage, [{
-                text: "ok",
-                onPress: () => {
-                    navigation.navigate('Login')
-                }
-            }])
         }
 
+        console.log("registerDispatchReset");
         dispatch(reset())
-    }, [successMessage, errorMessage, dispatch, navigation])
+
+    }, [registerErrorMsg, registerSuccessMsg])
 
 
     return (

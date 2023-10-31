@@ -5,6 +5,7 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 
 const User = require('../models/userModel')
+const { log } = require('console')
 
 // Register User =======================================
 
@@ -16,9 +17,9 @@ const registerUser = ash(async (req, res) => {
 
         // validation
         if (!name || !email || !password) {
-            return res.status(401).json({ message: "Please Enter The Required Field", isRegistered: false })
+            return res.status(401).json({ message: "Please Enter The Required Field"})
         } else if (existingUser) {
-            return res.status(401).json({ message: "Email Already Registered", isRegistered: false })
+            return res.status(401).json({ message: "Email Already Registered"})
         }
 
         const verificationToken = crypto.randomBytes(20).toString('hex')
@@ -32,8 +33,8 @@ const registerUser = ash(async (req, res) => {
             verificationToken
         })
 
-        sendVerificationEmail(email, verificationToken)
-        return res.status(201).json({ message: "You have registered successfully", isRegistered:true })
+        //sendVerificationEmail(email, verificationToken)
+        return res.status(201).json({ message: "You have registered successfully"})
 
     } catch (e) {
         console.log(e)
@@ -53,10 +54,11 @@ const loginUser = ash(async (req, res) => {
     }
 
     const passwordValidation = await bcrypt.compare(password, user.password)
-    console.log({passwordValidation});
+
     if (passwordValidation) {
         const token = generateJwt(user.id)
-        return res.status(201).json({ user, token, message: "Login Successfull"})
+        console.log({token});
+        return res.status(201).json({ token, message: "Login Successfull"})
     } else {
         return res.status(404).json({ message: "Sorry, we couldn't find account with this email and password."})
     }
@@ -81,9 +83,9 @@ const verifyEmail = ash(async (req, res) => {
 
 //get myaccount ======================
 
-const getMyAccount = (req,res) => {
+const getUserAccount = (req,res) => {
     console.log(req.user.id);
-    res.status(200).json({userId:req.user._id, isAuthorized:true})
+    res.status(200).json({user:req.user})
 }
 
 // Common Functions ======================
@@ -125,5 +127,5 @@ module.exports = {
     registerUser,
     loginUser,
     verifyEmail,
-    getMyAccount,
+    getUserAccount,
 }

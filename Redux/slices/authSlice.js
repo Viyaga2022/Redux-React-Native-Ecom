@@ -1,11 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { register, login, storeAuthToken, deleteAuthToken } from '../services/authServices'
+import { register, login, getUserAccount, storeAuthToken, deleteAuthToken } from '../services/authServices'
 
 const initialState = {
     currentUser: null,
+    userLoding: false,
+    userErrorMsg: null,
     isLoding: false,
-    successMessage: null,
-    errorMessage: null,
+    loginSuccessMsg: null,
+    loginErrorMsg: null,
+    registerSuccessMsg: null,
+    registerErrorMsg: null,
 }
 
 const authSlice = createSlice({
@@ -13,16 +17,28 @@ const authSlice = createSlice({
     initialState,
     reducers: {
         reset: (state) => {
+            state.userLoding = false
+            state.userErrorMsg = null
             state.isLoding = false
-            state.successMessage = null
-            state.errorMessage = null
+            state.loginSuccessMsg = null
+            state.loginErrorMsg = null
+            state.registerSuccessMsg = null
+            state.registerErrorMsg = null
+            console.log({ resetState: state });
         },
         logout: (state) => {
             deleteAuthToken()
-            state.currentUser = null
-            state.isLoding = false
-            state.successMessage = null
-            state.errorMessage = null
+            state = {
+                currentUser: null,
+                userLoding: false,
+                userErrorMsg: null,
+                isLoding: false,
+                loginSuccessMsg: null,
+                loginErrorMsg: null,
+                registerSuccessMsg: null,
+                registerErrorMsg: null,
+            }
+            console.log({ logoutState: state });
         },
     },
     extraReducers: (builder) => {
@@ -33,11 +49,11 @@ const authSlice = createSlice({
             })
             .addCase(register.fulfilled, (state, action) => {
                 state.isLoding = false
-                state.successMessage = action.payload.message
+                state.registerSuccessMsg = action.payload.message
             })
             .addCase(register.rejected, (state, action) => {
                 state.isLoding = false
-                state.errorMessage = action.payload
+                state.registerErrorMsg = action.payload
             })
 
             // Login
@@ -45,19 +61,30 @@ const authSlice = createSlice({
                 state.isLoding = true
             })
             .addCase(login.fulfilled, (state, action) => {
-                console.log("Login fullfilled");
-                storeAuthToken(action.payload.token)
                 state.isLoding = false
-                state.currentUser = action.payload.user
+                state.loginSuccessMsg = action.payload.message
+                storeAuthToken(action.payload.token)
             })
             .addCase(login.rejected, (state, action) => {
-                console.log("Login rejected");
                 state.isLoding = false
-                state.errorMessage = action.payload
+                state.loginErrorMsg = action.payload
+            })
+
+            //get User Account
+            .addCase(getUserAccount.pending, (state) => {
+                state.userLoding = true
+            })
+            .addCase(getUserAccount.fulfilled, (state, action) => {
+                state.userLoding = false
+                state.currentUser = action.payload.user
+            })
+            .addCase(getUserAccount.rejected, (state, action) => {
+                state.userLoding = false
+                state.userErrorMsg = action.payload
             })
     }
 })
 
-export { register, login }
-export const { reset, logout} = authSlice.actions
+export { register, login, getUserAccount }
+export const { reset, logout } = authSlice.actions
 export default authSlice.reducer
