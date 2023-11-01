@@ -24,7 +24,6 @@ const authSlice = createSlice({
             state.loginErrorMsg = null
             state.registerSuccessMsg = null
             state.registerErrorMsg = null
-            console.log({ resetState: state });
         },
         logout: (state) => {
             deleteAuthToken()
@@ -38,7 +37,6 @@ const authSlice = createSlice({
                 registerSuccessMsg: null,
                 registerErrorMsg: null,
             }
-            console.log({ logoutState: state });
         },
     },
     extraReducers: (builder) => {

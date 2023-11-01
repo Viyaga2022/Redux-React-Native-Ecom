@@ -38,6 +38,10 @@ const login = createAsyncThunk(
 const getUserAccount = createAsyncThunk(
     'auth/myAccount',
     async (token, thunkAPI) => {
+
+        // set Auth Token in Axios Header
+        setAxiosHeader(token)
+
         try {
             const response = await axios.get(`${BASE_URL}/getUserAccount`)
             return response.data

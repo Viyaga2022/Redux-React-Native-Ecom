@@ -5,7 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, reset } from '../../Redux/slices/authSlice';
-import Spinner from '../Spinner';
+import SmallSpinner from '../Spinner';
 
 const LoginContent = () => {
   const [email, setEmail] = useState("")
@@ -26,7 +26,6 @@ const LoginContent = () => {
     }
 
     if (loginSuccessMsg) {
-      Alert.alert('', loginSuccessMsg)
       navigation.replace('Main')
     }
 
@@ -83,7 +82,7 @@ const LoginContent = () => {
       {isLoding
         ? (
           <View style={{ width: 200, height: 50, backgroundColor: "#FEBE10", padding: 15, marginLeft: "auto", marginRight: "auto", borderRadius: 6 }}>
-            <Spinner color="blue" />
+            <SmallSpinner color="blue" />
           </View>
         )
         : (

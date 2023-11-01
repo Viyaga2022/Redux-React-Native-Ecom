@@ -3,7 +3,6 @@ const ash =  require('express-async-handler')
 const User = require('../models/userModel')
 
 const protect = ash(async(req,res,next) => {
-    console.log({user:req.user});
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         let token = req.headers.authorization.split(' ')[1]
         const decode = jwt.verify(token, process.env.JWT_SECRET)

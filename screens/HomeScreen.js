@@ -14,57 +14,62 @@ import AddressModal from '../screens/AddressModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, getUserAccount } from '../Redux/slices/authSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import Spinner from '../components/Spinner'
+import BigSpinner from '../components/BigSpinner'
 
 const HomeScreen = () => {
-  const insets = useSafeAreaInsets()
-  const navigation = useNavigation()
-  const dispatch = useDispatch()
-  const { currentUser, userErrorMsg } = useSelector((state) => state.auth)
-  if (currentUser) {
-    console.log(currentUser);
-  }
+    const insets = useSafeAreaInsets()
+    const navigation = useNavigation()
+    const dispatch = useDispatch()
+    const { currentUser, userErrorMsg, userLoding } = useSelector((state) => state.auth)
 
-  const getUser = async () => {
-    const token = await AsyncStorage.getItem('auth')
-    if (!token) {
-      dispatch(logout())
-      navigation.replace('Login')
+
+    useEffect(() => {
+
+        if (userErrorMsg) {
+            Alert.alert('', userErrorMsg)
+        }
+
+        const getUser = async () => {
+            const token = await AsyncStorage.getItem('auth')
+            if (!token) {
+                dispatch(logout())
+                navigation.replace('Login')
+            }
+            dispatch(getUserAccount(token))
+        }
+
+        getUser()
+    }, [userErrorMsg])
+
+    if (userLoding) {
+        return <BigSpinner />
     }
-    dispatch(getUserAccount())
-  }
-
-  useEffect(() => {
-    if (userErrorMsg) {
-      Alert.alert('', userErrorMsg)
-    }
-
-    getUser()
-  }, [userErrorMsg])
-
-  return (
-    <>
-      <View
-        style={{
-          flex: 1,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom,
-          paddingLeft: insets.left,
-          paddingRight: insets.right
-        }}
-      >
-        <ScrollView overScrollMode="never">
-          <SearchProducts />
-          <AddressBar />
-          <Categories />
-          <Carousel />
-          <PopularProducts />
-          <DealOfTheDay />
-          <Products />
-          <AddressModal />
-        </ScrollView>
-      </View>
-    </>
-  )
+   
+    return (
+        <>
+            <View
+                style={{
+                    flex: 1,
+                    paddingTop: insets.top,
+                    paddingBottom: insets.bottom,
+                    paddingLeft: insets.left,
+                    paddingRight: insets.right
+                }}
+            >
+                <ScrollView overScrollMode="never">
+                    <SearchProducts />
+                    <AddressBar />
+                    <Categories />
+                    <Carousel />
+                    <PopularProducts />
+                    <DealOfTheDay />
+                    <Products />
+                    <AddressModal />
+                </ScrollView>
+            </View>
+        </>
+    )
 }
 
 export default HomeScreen
